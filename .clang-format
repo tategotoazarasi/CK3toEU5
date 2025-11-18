@@ -1,0 +1,64 @@
+BasedOnStyle: Microsoft
+Language: Cpp
+
+AccessModifierOffset: -1
+AlignAfterOpenBracket: DontAlign
+AllowAllArgumentsOnNextLine: false
+AllowAllConstructorInitializersOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLambdasOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: true
+BinPackArguments: false
+BinPackParameters: false
+BraceWrapping:
+  BeforeLambdaBody: false
+BreakBeforeBraces: Custom
+BreakConstructorInitializers: AfterColon
+ColumnLimit: 160
+Cpp11BracedListStyle: true
+IndentCaseLabels: true
+IndentWidth: 3
+DerivePointerAlignment: false
+MaxEmptyLinesToKeep: 3
+PointerAlignment: Left
+SortIncludes: true
+SortUsingDeclarations: true
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCtorInitializerColon: false
+SpaceBeforeInheritanceColon: false
+SpaceBeforeRangeBasedForLoopColon: false
+TabWidth: 3
+UseTab: Always
+
+# Generated from CLion C/C++ Code Style settingstive
+AlignOperands: Align
+AlwaysBreakTemplateDeclarations: No
+BreakBeforeBinaryOperators: None
+BreakBeforeTernaryOperators: true
+BreakInheritanceList: BeforeColon
+CompactNamespaces: false
+ContinuationIndentWidth: 8
+IndentPPDirectives: None
+KeepEmptyLinesAtTheStartOfBlocks: true
+NamespaceIndentation: All
+ObjCSpaceAfterProperty: false
+ObjCSpaceBeforeProtocolList: true
+ReflowComments: false
+SpaceAfterCStyleCast: true
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: false
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeParens: Never
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 0
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInContainerLiterals: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
