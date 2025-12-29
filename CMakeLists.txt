@@ -55,7 +55,7 @@ set(CMAKE_DISABLE_FIND_PACKAGE_SQLiteCpp ON)
 FetchContent_Declare(
 		Fronter
 		GIT_REPOSITORY https://github.com/tategotoazarasi/Fronter.git
-		GIT_TAG b81c82c
+		GIT_TAG f3cd85c
 		)
 
 file(WRITE "${CMAKE_SOURCE_DIR}/Copy_Files.sh" "#!/bin/sh\necho 'Dummy script to satisfy Fronter build requirement'\n")

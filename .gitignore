@@ -618,3 +618,22 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+*.ko
+*.elf
+*.map
+*.exp
+*.so.*
+*.i*86
+*.x86_64
+*.hex
+*.dSYM/
+*.su
+*.idb
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf

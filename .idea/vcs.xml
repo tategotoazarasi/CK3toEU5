@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/_deps/commonitems-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/_deps/fronter-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/_deps/sqlitecpp-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/_deps/sqlitecpp-src/googletest" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/_deps/zip-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/commonitems-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/fronter-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/sqlitecpp-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/sqlitecpp-src/googletest" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/zip-src" vcs="Git" />
+  </component>
+</project>
