@@ -1,0 +1,20 @@
+{
+  "name": "ck3toeu5-dependencies",
+  "version-string": "1.0.0",
+  "dependencies": [
+    "curl",
+    "kubazip",
+    "nlohmann-json",
+    "sqlitecpp",
+    {
+      "name": "wxwidgets",
+      "default-features": true
+    }
+  ],
+  "overrides": [
+    {
+      "name": "wxwidgets",
+      "version": "3.2.4"
+    }
+  ]
+}

@@ -24,6 +24,7 @@ set(BUILD_STATIC_CURL ON CACHE BOOL "" FORCE)
 
 include(FetchContent)
 
+# 1. commonItems
 FetchContent_Declare(
 		commonItems
 		GIT_REPOSITORY https://github.com/tategotoazarasi/commonItems.git
@@ -33,10 +34,28 @@ set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
 set(COVERAGE OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(commonItems)
 
+# 2. SQLiteCpp - PRE-LOAD
+# We fetch this BEFORE Fronter to override the VCPKG version.
+# This ensures it is built as a static lib with C++23 support.
+message(STATUS "Fetching SQLiteCpp from source to override VCPKG version...")
+set(SQLITECPP_RUN_CPPCHECK OFF CACHE BOOL "" FORCE)
+set(SQLITECPP_RUN_CPPLINT OFF CACHE BOOL "" FORCE)
+set(SQLITECPP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(SQLITECPP_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+FetchContent_Declare(
+    SQLiteCpp
+    GIT_REPOSITORY https://github.com/SRombauts/SQLiteCpp.git
+    GIT_TAG 3.3.3
+)
+FetchContent_MakeAvailable(SQLiteCpp)
+# Prevent Fronter from finding the VCPKG package and ensure it uses our target
+set(CMAKE_DISABLE_FIND_PACKAGE_SQLiteCpp ON)
+
+# 3. Fronter
 FetchContent_Declare(
 		Fronter
 		GIT_REPOSITORY https://github.com/tategotoazarasi/Fronter.git
-		GIT_TAG a9a0d24
+		GIT_TAG b81c82c
 		)
 
 file(WRITE "${CMAKE_SOURCE_DIR}/Copy_Files.sh" "#!/bin/sh\necho 'Dummy script to satisfy Fronter build requirement'\n")
@@ -46,10 +65,17 @@ endif ()
 
 FetchContent_MakeAvailable(Fronter)
 
+# 4. FIX: Patch the Fronter Target
+# The remote Fronter CMakeLists lacks the WIN32 flag, causing 'unresolved external symbol main'.
+# We manually set the property here to force /SUBSYSTEM:WINDOWS.
+if (TARGET ConverterFrontend AND WIN32)
+    set_target_properties(ConverterFrontend PROPERTIES WIN32_EXECUTABLE ON)
+endif()
+
+# --- Main Project Targets ---
 
 add_executable(CK3toEU5 src/main.cpp)
 target_link_libraries(CK3toEU5 PRIVATE commonItems::commonItems)
-
 
 set_target_properties(ConverterFrontend PROPERTIES
                       OUTPUT_NAME "CK3toEU5Frontend"
