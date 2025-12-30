@@ -4,6 +4,7 @@
 #include "../CoatsOfArms/CoatsOfArms.h"
 #include "CommonRegexes.h"
 #include "Confederation.h"
+#include "Log.h"
 #include "ParserHelpers.h"
 #include "ranges"
 

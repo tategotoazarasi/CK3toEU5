@@ -33,8 +33,9 @@ void CK3::CharacterDomain::registerKeys() {
 					});
 	registerKeyword("domain",
 					[this](const std::string &unused, std::istream &theStream) {
-						for (auto titleID: commonItems::llongList(theStream).getLlongs()) domain.emplace_back(
-							std::pair(titleID, nullptr));
+						for (auto titleID: commonItems::llongList(theStream).getLlongs())
+							domain.emplace_back(
+								std::pair(titleID, nullptr));
 					});
 	registerRegex(commonItems::catchallRegex, commonItems::ignoreItem);
 }

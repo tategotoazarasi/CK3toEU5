@@ -20,7 +20,6 @@ void mappers::CK3ReligionScraper::registerKeys() {
 }
 
 std::set<std::string> mappers::CK3ReligionScraper::getSimilarFaiths(const std::string &faith) const {
-	for (const auto &faiths: religionFaiths | std::views::values)
-		if (faiths.contains(faith)) return faiths;
+	for (const auto &faiths: religionFaiths | std::views::values) if (faiths.contains(faith)) return faiths;
 	return {};
 }

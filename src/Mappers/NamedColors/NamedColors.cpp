@@ -1,5 +1,6 @@
 #include "NamedColors.h"
 #include "CommonRegexes.h"
+#include "Log.h"
 #include "ParserHelpers.h"
 
 void mappers::NamedColors::loadColors(std::istream &theStream) {

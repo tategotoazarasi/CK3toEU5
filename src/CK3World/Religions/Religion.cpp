@@ -20,8 +20,9 @@ void CK3::Religion::registerKeys() {
 					});
 	registerKeyword("faiths",
 					[this](const std::string &unused, std::istream &theStream) {
-						for (auto faith: commonItems::llongList(theStream).getLlongs()) faiths.insert(
-							std::pair(faith, nullptr));
+						for (auto faith: commonItems::llongList(theStream).getLlongs())
+							faiths.insert(
+								std::pair(faith, nullptr));
 					});
 	registerRegex(commonItems::catchallRegex, commonItems::ignoreItem);
 }

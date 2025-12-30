@@ -46,13 +46,15 @@ void CK3::Character::registerKeys() {
 							skills.stewardship = skillList[2];
 							skills.intrigue    = skillList[3];
 							skills.learning    = skillList[4];
-						} else Log(LogLevel::Error) << "Character " << charID << " has a malformed skills block! Size: "
-								<< skillList.size();
+						} else
+							Log(LogLevel::Error) << "Character " << charID << " has a malformed skills block! Size: "
+									<< skillList.size();
 					});
 	registerKeyword("traits",
 					[this](const std::string &unused, std::istream &theStream) {
-						for (const auto traitID: commonItems::intList(theStream).getInts()) traits.insert(
-							std::pair(traitID, std::string()));
+						for (const auto traitID: commonItems::intList(theStream).getInts())
+							traits.insert(
+								std::pair(traitID, std::string()));
 					});
 	registerKeyword("alive_data",
 					[this](const std::string &unused, std::istream &theStream) {

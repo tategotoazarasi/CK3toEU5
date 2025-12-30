@@ -102,7 +102,7 @@ public:
 	[[nodiscard]] const auto &getSaveGamePath() const { return SaveGamePath; }
 	[[nodiscard]] const auto &getCK3Path() const { return CK3Path; }
 	[[nodiscard]] const auto &getCK3DocPath() const { return CK3DocPath; }
-	[[nodiscard]] const auto &getEU4Path() const { return EU4Path; }
+	[[nodiscard]] const auto &getEU5Path() const { return EU5Path; }
 	[[nodiscard]] const auto &getOutputName() const { return outputName; }
 	[[nodiscard]] const auto &getStartDateOption() const { return startDate; }
 	[[nodiscard]] const auto &getHRE() const { return iAmHre; }
@@ -131,16 +131,16 @@ private:
 
 	void verifyCK3Path();
 
-	void verifyEU4Path() const;
+	void verifyEU5Path() const;
 
 	void verifyCK3Version(const commonItems::ConverterVersion &converterVersion) const;
 
-	void verifyEU4Version(const commonItems::ConverterVersion &converterVersion) const;
+	void verifyEU5Version(const commonItems::ConverterVersion &converterVersion) const;
 
 	std::filesystem::path SaveGamePath;
 	std::filesystem::path CK3Path;
 	std::filesystem::path CK3DocPath;
-	std::filesystem::path EU4Path;
+	std::filesystem::path EU5Path;
 	std::filesystem::path outputName;
 
 	STARTDATE            startDate                        = STARTDATE::EU;

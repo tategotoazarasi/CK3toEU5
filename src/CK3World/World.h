@@ -1,30 +1,29 @@
 #ifndef CK3_WORLD_H
 #define CK3_WORLD_H
-#include "../Mappers/CultureMapper/CultureMapper.h"
-#include "../Mappers/IAmHreMapper/IAmHreMapper.h"
-#include "../Mappers/LocalizationMapper/LocalizationMapper.h"
-#include "../Mappers/NamedColors/NamedColors.h"
-#include "../Mappers/ShatterEmpiresMapper/ShatterEmpiresMapper.h"
-#include "../Mappers/TraitScraper/TraitScraper.h"
-#include "../Mappers/VassalSplitoffMapper/VassalSplitoffMapper.h"
-#include "Characters/Characters.h"
-#include "CoatsOfArms/CoatsOfArms.h"
-#include "Confederations/Confederations.h"
+#include "CK3World/Characters/Characters.h"
+#include "CK3World/CoatsOfArms/CoatsOfArms.h"
+#include "CK3World/Confederations/Confederations.h"
+#include "CK3World/Cultures/Cultures.h"
+#include "CK3World/Dynasties/Dynasties.h"
+#include "CK3World/Dynasties/HouseNameScraper.h"
+#include "CK3World/Dynasties/Houses.h"
+#include "CK3World/Flags/Flags.h"
+#include "CK3World/Geography/CountyDetails.h"
+#include "CK3World/Geography/ProvinceHoldings.h"
+#include "CK3World/Religions/Faiths.h"
+#include "CK3World/Religions/Religions.h"
+#include "CK3World/Titles/LandedTitles.h"
+#include "CK3World/Titles/Titles.h"
 #include "ConverterVersion.h"
-#include "Cultures/Cultures.h"
-#include "Dynasties/Dynasties.h"
-#include "Dynasties/HouseNameScraper.h"
-#include "Dynasties/Houses.h"
-#include "Flags/Flags.h"
 #include "GameVersion.h"
-#include "Geography/CountyDetails.h"
-#include "Geography/ProvinceHoldings.h"
+#include "Mappers/IAmHreMapper/IAmHreMapper.h"
+#include "Mappers/LocalizationMapper/LocalizationMapper.h"
+#include "Mappers/NamedColors/NamedColors.h"
+#include "Mappers/ShatterEmpiresMapper/ShatterEmpiresMapper.h"
+#include "Mappers/TraitScraper/TraitScraper.h"
+#include "Mappers/VassalSplitoffMapper/VassalSplitoffMapper.h"
 #include "ModLoader/ModLoader.h"
 #include "Parser.h"
-#include "Religions/Faiths.h"
-#include "Religions/Religions.h"
-#include "Titles/LandedTitles.h"
-#include "Titles/Titles.h"
 #include <Date.h>
 
 class Configuration;
@@ -45,7 +44,6 @@ namespace CK3 {
 		[[nodiscard]] auto        isCoADesignerEnabled() const { return coaDesigner; }
 		[[nodiscard]] const auto &getPlayerTitle() const { return playerTitle; }
 		[[nodiscard]] const auto &getLocalizationMapper() const { return localizationMapper; }
-		[[nodiscard]] const auto &getCultureMapper() const { return cultureMapper; }
 		[[nodiscard]] const auto &getCultures() const { return cultures; }
 		[[nodiscard]] const auto &getConfederations() const { return confederations; }
 		[[nodiscard]] const auto &getCelestialTitle() const { return celestialTitle; }
@@ -128,7 +126,6 @@ namespace CK3 {
 		mappers::TraitScraper         traitScraper;
 		mappers::VassalSplitoffMapper vassalSplitoffMapper;
 		mappers::LocalizationMapper   localizationMapper;
-		mappers::CultureMapper        cultureMapper;
 
 		std::optional<std::pair<std::string, std::shared_ptr<Title> > > hreTitle; // loaded by configuration option.
 		std::optional<std::pair<std::string, std::shared_ptr<Title> > > celestialTitle;

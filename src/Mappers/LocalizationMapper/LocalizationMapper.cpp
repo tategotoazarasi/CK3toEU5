@@ -5,6 +5,8 @@
 #include <fstream>
 #include <set>
 
+#include "StringUtils.h"
+
 void mappers::LocalizationMapper::scrapeLocalizations(const Configuration &theConfiguration, const Mods &mods) {
 	scrapeLanguage("english", theConfiguration.getCK3Path() / "localization");
 	scrapeLanguage("french", theConfiguration.getCK3Path() / "localization");

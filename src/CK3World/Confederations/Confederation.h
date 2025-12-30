@@ -1,5 +1,6 @@
 #ifndef CK3_CONFEDERATION_H
 #define CK3_CONFEDERATION_H
+#include "Color.h"
 #include "Parser.h"
 extern commonItems::Color::Factory laFabricaDeColor;
 

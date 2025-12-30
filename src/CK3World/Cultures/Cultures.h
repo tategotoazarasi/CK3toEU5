@@ -1,7 +1,6 @@
 #ifndef CK3_CULTURES_H
 #define CK3_CULTURES_H
-#include "../../Mappers/CultureMapper/CultureMapper.h"
-#include "../../Mappers/LocalizationMapper/LocalizationMapper.h"
+#include "Mappers/LocalizationMapper/LocalizationMapper.h"
 #include "Parser.h"
 
 namespace CK3 {
@@ -15,8 +14,7 @@ namespace CK3 {
 
 		[[nodiscard]] const auto &getCultures() const { return cultures; }
 
-		void concoctCultures(const mappers::LocalizationMapper &localizationMapper,
-							 const mappers::CultureMapper &     cultureMapper);
+		void concoctCultures(const mappers::LocalizationMapper &localizationMapper);
 
 	private:
 		void registerKeys();

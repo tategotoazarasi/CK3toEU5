@@ -32,9 +32,10 @@ void CK3::CoatsOfArms::linkParents(const Titles &titles) {
 		if (!coat.second->getParent()) continue;
 		const auto &titleDataItr = titleData.find(coat.second->getParent()->first);
 		if (titleDataItr != titleData.end()) {
-			if (!titleDataItr->second->getCoA()) throw std::runtime_error(
-				"CoA " + std::to_string(coat.first) + " has parent " + coat.second->getParent()->first +
-				" which has no coat defined!");
+			if (!titleDataItr->second->getCoA())
+				throw std::runtime_error(
+					"CoA " + std::to_string(coat.first) + " has parent " + coat.second->getParent()->first +
+					" which has no coat defined!");
 			if (!coats.count(titleDataItr->second->getCoA()->first))
 				throw std::runtime_error(
 					"CoA " + std::to_string(coat.first) + " has parent " + coat.second->getParent()->first +

@@ -29,9 +29,10 @@ void CK3::Titles::registerKeys() {
 							std::stringstream     blobStream(dynamicTitle);
 							const DynamicTemplate dynamicTitleTemplate(blobStream);
 							if (!dynamicTitleTemplate.getDynamicTitleKey().empty() && !dynamicTitleTemplate.
-								getDynamicTitleRank().empty()) dynamicTitleRanks.insert(
-								std::pair(dynamicTitleTemplate.getDynamicTitleKey(),
-										  dynamicTitleTemplate.getDynamicTitleRank()));
+								getDynamicTitleRank().empty())
+								dynamicTitleRanks.insert(
+									std::pair(dynamicTitleTemplate.getDynamicTitleKey(),
+											  dynamicTitleTemplate.getDynamicTitleRank()));
 						}
 					});
 	registerKeyword("landed_titles",
@@ -128,8 +129,7 @@ void CK3::Titles::linkTitles() {
 	// But before we begin, we need to clear out the mess that is the save. Titles will have defacto liege set to titles that have no holder.
 	// To filter them, let's first run through all titles and make a cache of all without a holder.
 	std::set<long long> holderlessTitles;
-	for (const auto &title: titles)
-		if (!title.second->getHolder()) holderlessTitles.insert(title.second->getID());
+	for (const auto &title: titles) if (!title.second->getHolder()) holderlessTitles.insert(title.second->getID());
 
 	// Additional objective:
 	// When a county and a duchy are held by same holder, under a king, both titles will have the kingdom set as defacto liege. We need to

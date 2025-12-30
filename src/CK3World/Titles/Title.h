@@ -5,14 +5,6 @@
 #include "Parser.h"
 #include <set>
 
-namespace mappers {
-	class DevWeightsMapper;
-}
-
-namespace EU4 {
-	class Country;
-}
-
 namespace CK3 {
 	class Character;
 	class CoatOfArms;
@@ -60,7 +52,6 @@ namespace CK3 {
 		[[nodiscard]] auto        isHRECapital() const { return HRECapital; }
 		[[nodiscard]] auto        isCustomTitle() const { return customTitle; }
 		[[nodiscard]] auto        isRenamed() const { return renamed; }
-		[[nodiscard]] auto        isManualNameClaimed() const { return nameClaimed; }
 		[[nodiscard]] const auto &getName() const { return name; }
 		[[nodiscard]] const auto &getDisplayName() const { return displayName; }
 
@@ -86,7 +77,6 @@ namespace CK3 {
 		[[nodiscard]] const auto &getHoldingTitle() const { return holdingTitle; }
 		[[nodiscard]] const auto &getGeneratedLiege() const { return generatedLiege; }
 		[[nodiscard]] const auto &getGeneratedVassals() const { return generatedVassals; }
-		[[nodiscard]] const auto &getEU4Tag() const { return tagCountry; }
 		[[nodiscard]] const auto &getPreviousHolders() const { return previousHolders; }
 
 		[[nodiscard]] std::optional<commonItems::Color> getColor() const;
@@ -105,6 +95,8 @@ namespace CK3 {
 		[[nodiscard]] std::set<std::string> getTitleNamesFromHolderDomain() const;
 
 		[[nodiscard]] LEVEL getLevel() const;
+
+		[[nodiscard]] double getDevelopment() const;
 
 		// linkage
 		void loadCoat(const std::pair<long long, std::shared_ptr<CoatOfArms> > &coat) { coa = coat; }
@@ -165,13 +157,8 @@ namespace CK3 {
 
 		void setThePope() { thePope = true; }
 		void setCustomTitle() { customTitle = true; }
-		void setManualNameClaim() { nameClaimed = true; }
 
-		void pickDisplayName(const std::map<std::string, std::shared_ptr<Title> > &possibleTitles);
-
-		// Grants one county's name to another during N:1/N:M mappings
-		std::shared_ptr<Title> findDuchyCapital(); // Only for c_, for now
-		void                   congregateDFCounties();
+		void congregateDFCounties();
 
 		void congregateDJCounties();
 
@@ -191,13 +178,6 @@ namespace CK3 {
 
 		void relinkDeFactoVassals();
 
-		// conversion
-		void loadEU4Tag(const std::pair<std::string, std::shared_ptr<EU4::Country> > &theCountry) {
-			tagCountry = theCountry;
-		}
-
-		[[nodiscard]] double getBuildingWeight(const mappers::DevWeightsMapper &devWeightsMapper) const;
-
 		void setHolderCapital() { holderCapital = true; }
 		void setHRECapital() { HRECapital = true; }
 		void clearGeneratedVassals() { generatedVassals.clear(); }
@@ -211,59 +191,46 @@ namespace CK3 {
 
 		parser nameParser;
 
-		long long                                     ID = 0; // 11038
-		std::pair<long long, std::shared_ptr<Title> > capital;
-		// capital title is a COUNTY, even for county itself and baronies beneath it!
-		std::string name; // c_ashmaka - Immutable.
-		std::string alteredName;
-		// c_ashmaka but changed. china, dynamics etc. We're not altering original pair key though.
-		std::string displayName; // Ashmaka
-		std::string adjective; // Ashmakan
-		std::string article; // "the ". Not always present.
-		std::string historyGovernment; // Unclear why this is history. Maybe further governments override it.
-		date creationDate; // Unclear. Ranges to 9999.1.1, probably is PDX alternative for "bool isCreated";
-		std::optional<std::pair<long long, std::shared_ptr<CoatOfArms> > > coa; // This is dejure flag but not defacto.
-		std::optional<std::pair<long long, std::shared_ptr<Title> > > dfLiege; // defacto liege title (d_kalyani)
-		std::optional<std::pair<long long, std::shared_ptr<Title> > > djLiege; // dejure liege title (d_rattapadi)
-		std::optional<std::pair<long long, std::shared_ptr<Character> > > holder; // Holding character
-		std::map<long long, std::shared_ptr<Title> > dfVassals;
-		// defacto vassals, not in save, manually linked post-loading
-		std::map<long long, std::shared_ptr<Title> > djVassals; // dejure vassals (for all except baronies and titulars)
-		std::vector<std::pair<long long, std::shared_ptr<Character> > > heirs;
-		// Order of heirs is unclear so we're keeping them ordered and using first if able.
-		std::map<long long, std::shared_ptr<Character> > claimants;
-		// People holding a claim to this title. Incredibly useful.
-		std::map<long long, std::shared_ptr<Character> > electors;
-		// People involved in elections regardless of election type law.
-		bool theocraticLease = false; // Does this apply to non-baronies? Maybe? Who owns it then, dejure liege?
-		std::set<std::string> laws;
-		bool cCapitalBarony = false;
-		bool dCapitalBarony = false;
-		std::shared_ptr<LandedTitles> clay;
-		// Middleware towards geographical data, essential for b_&c_, potentially obsolete for others.
-		bool HREEmperor = false;
-		bool inHRE = false;
-		bool thePope = false;
-		bool customTitle = false; // True if title was fromed via "Found a New Kingdom/Empire" decision. Vestigal
-		bool renamed = false; // True if title was manually named
-		bool nameClaimed = false; // Flag for 1:M (or N:M) province mappings to decide who gets the manual name
-		std::map<std::string, std::shared_ptr<Title> > ownedDFCounties;
-		// used to map higher-lvl titles directly to clay. Includes self! Every c_+ title has this.
-		std::map<std::string, std::shared_ptr<Title> >                  ownedDJCounties; // ditto
-		std::optional<std::pair<std::string, std::shared_ptr<Title> > > generatedLiege;
-		// Liege we set manually while splitting vassals.
-		std::map<std::string, std::shared_ptr<Title> >  generatedVassals; // Vassals we split off deliberately.
-		std::pair<std::string, std::shared_ptr<Title> > holdingTitle;
-		// topmost owner title (e_francia or similar), only c_s have this.
-		bool                                                                   electorate = false;
-		std::optional<std::pair<std::string, std::shared_ptr<EU4::Country> > > tagCountry;
-		bool                                                                   landless = false;
-		std::optional<commonItems::Color>                                      color;
-		std::vector<std::pair<long long, std::shared_ptr<Character> > >        previousHolders;
-		bool                                                                   holderCapital = false;
-		bool                                                                   HRECapital    = false;
-		std::optional<LEVEL>                                                   dynamicLevel;
-		// Maybe assigned through dynamic ranks, otherwise getLevel will try to guesstimate.
+		long long                                                          ID = 0;
+		std::pair<long long, std::shared_ptr<Title> >                      capital;
+		std::string                                                        name;
+		std::string                                                        alteredName;
+		std::string                                                        displayName;
+		std::string                                                        adjective;
+		std::string                                                        article;
+		std::string                                                        historyGovernment;
+		date                                                               creationDate;
+		std::optional<std::pair<long long, std::shared_ptr<CoatOfArms> > > coa;
+		std::optional<std::pair<long long, std::shared_ptr<Title> > >      dfLiege;
+		std::optional<std::pair<long long, std::shared_ptr<Title> > >      djLiege;
+		std::optional<std::pair<long long, std::shared_ptr<Character> > >  holder;
+		std::map<long long, std::shared_ptr<Title> >                       dfVassals;
+		std::map<long long, std::shared_ptr<Title> >                       djVassals;
+		std::vector<std::pair<long long, std::shared_ptr<Character> > >    heirs;
+		std::map<long long, std::shared_ptr<Character> >                   claimants;
+		std::map<long long, std::shared_ptr<Character> >                   electors;
+		bool                                                               theocraticLease = false;
+		std::set<std::string>                                              laws;
+		bool                                                               cCapitalBarony = false;
+		bool                                                               dCapitalBarony = false;
+		std::shared_ptr<LandedTitles>                                      clay;
+		bool                                                               HREEmperor  = false;
+		bool                                                               inHRE       = false;
+		bool                                                               thePope     = false;
+		bool                                                               customTitle = false;
+		bool                                                               renamed     = false;
+		std::map<std::string, std::shared_ptr<Title> >                     ownedDFCounties;
+		std::map<std::string, std::shared_ptr<Title> >                     ownedDJCounties;
+		std::optional<std::pair<std::string, std::shared_ptr<Title> > >    generatedLiege;
+		std::map<std::string, std::shared_ptr<Title> >                     generatedVassals;
+		std::pair<std::string, std::shared_ptr<Title> >                    holdingTitle;
+		bool                                                               electorate = false;
+		bool                                                               landless   = false;
+		std::optional<commonItems::Color>                                  color;
+		std::vector<std::pair<long long, std::shared_ptr<Character> > >    previousHolders;
+		bool                                                               holderCapital = false;
+		bool                                                               HRECapital    = false;
+		std::optional<LEVEL>                                               dynamicLevel;
 	};
 } // namespace CK3
 

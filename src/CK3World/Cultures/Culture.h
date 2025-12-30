@@ -1,12 +1,8 @@
 #ifndef CK3_CULTURE_H
 #define CK3_CULTURE_H
-#include "../../Mappers/LocalizationMapper/LocalizationMapper.h"
+#include "Mappers/LocalizationMapper/LocalizationMapper.h"
 #include "Parser.h"
 #include <set>
-
-namespace mappers {
-	class CultureMapper;
-}
 
 namespace CK3 {
 	class Culture : commonItems::parser {
@@ -16,8 +12,6 @@ namespace CK3 {
 		Culture(std::istream &theStream, long long theID);
 
 		[[nodiscard]] auto        getID() const { return ID; }
-		[[nodiscard]] auto        isEU4Ready() const { return eu4Ready; }
-		[[nodiscard]] auto        isDynamic() const { return dynamic; }
 		[[nodiscard]] const auto &getLocalizedName() const { return localizedName; }
 		[[nodiscard]] const auto &getName() const { return name; }
 		[[nodiscard]] const auto &getNameLists() const { return nameLists; }
@@ -26,18 +20,13 @@ namespace CK3 {
 		[[nodiscard]] const auto &getEthos() const { return ethos; }
 		[[nodiscard]] const auto &getTraditions() const { return traditions; }
 
-		void setDynamic() { dynamic = true; }
-
 		void concoctCultureName(const mappers::LocalizationMapper &localizationMapper,
-								const mappers::CultureMapper &     cultureMapper,
 								std::map<std::string, int> &       cultureNamingCounter);
 
 	private:
 		void registerKeys();
 
-		long long ID       = 0;
-		bool      eu4Ready = false; // this culture has eu4 match and needs zero processing
-		bool      dynamic  = false; // this culture is dynamic and will need generation of cultural data
+		long long ID = 0;
 
 		std::optional<std::string> culture_template; // this has data only for base ck3 cultures, like czech or german
 		std::optional<std::string> localizedName;

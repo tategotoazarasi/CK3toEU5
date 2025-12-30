@@ -83,14 +83,16 @@ void CK3::Characters::linkHouses(const Houses &houses) {
 			++counter;
 			if (!character.second->getCulture()) {
 				if (character.second->getHouse().second->getHouseHead() && character.second->getHouse().second->
-					getHouseHead()->second->getCulture()) character.second->loadCulture(
-					*character.second->getHouse().second->getHouseHead()->second->getCulture());
+					getHouseHead()->second->getCulture())
+					character.second->loadCulture(
+						*character.second->getHouse().second->getHouseHead()->second->getCulture());
 				else missingCulture++;
 			}
 			if (!character.second->getFaith()) {
 				if (character.second->getHouse().second->getHouseHead() && character.second->getHouse().second->
-					getHouseHead()->second->getFaith()) character.second->loadFaith(
-					*character.second->getHouse().second->getHouseHead()->second->getFaith());
+					getHouseHead()->second->getFaith())
+					character.second->loadFaith(
+						*character.second->getHouse().second->getHouseHead()->second->getFaith());
 				else missingFaith++;
 			}
 		} else {

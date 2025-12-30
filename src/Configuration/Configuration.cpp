@@ -17,8 +17,9 @@ Configuration::Configuration(const commonItems::ConverterVersion &converterVersi
 	setOutputName();
 	verifyCK3Path();
 	verifyCK3Version(converterVersion);
-	verifyEU4Path();
-	verifyEU4Version(converterVersion);
+	// We don't have EU5, so we can't verify paths or versions.
+	// verifyEU5Path();
+	// verifyEU5Version(converterVersion);
 	Log(LogLevel::Progress) << "3 %";
 }
 
@@ -41,10 +42,10 @@ void Configuration::registerKeys() {
 						const commonItems::singleString path(theStream);
 						CK3Path = path.getString();
 					});
-	registerKeyword("EU4directory",
+	registerKeyword("EU5directory",
 					[this](const std::string &unused, std::istream &theStream) {
 						const commonItems::singleString path(theStream);
-						EU4Path = path.getString();
+						EU5Path = path.getString();
 					});
 	registerKeyword("CK3DocDirectory",
 					[this](const std::string &unused, std::istream &theStream) {
@@ -171,13 +172,10 @@ void Configuration::verifyCK3Path() {
 	CK3Path += "/game/"; // We're adding "/game/" since all we ever need from now on is in that subdirectory.
 }
 
-void Configuration::verifyEU4Path() const {
-	if (!commonItems::DoesFolderExist(EU4Path)) throw std::runtime_error(EU4Path.string() + " does not exist!");
-	if (!commonItems::DoesFileExist(EU4Path / "eu4.exe") && !commonItems::DoesFileExist(EU4Path / "eu4")) throw
-			std::runtime_error(EU4Path.string() + " does not contain Europa Universalis 4!");
-	if (!commonItems::DoesFileExist(EU4Path / "map/positions.txt")) throw std::runtime_error(
-		EU4Path.string() + " does not appear to be a valid EU4 install!");
-	Log(LogLevel::Info) << "\tEU4 install path is " << EU4Path.string();
+void Configuration::verifyEU5Path() const {
+	if (!commonItems::DoesFolderExist(EU5Path)) throw std::runtime_error(EU5Path.string() + " does not exist!");
+	// Add checks for eu5.exe etc. when the game is out.
+	Log(LogLevel::Info) << "\tEU5 install path is " << EU5Path.string();
 }
 
 void Configuration::setOutputName() {
@@ -211,23 +209,6 @@ void Configuration::verifyCK3Version(const commonItems::ConverterVersion &conver
 	}
 }
 
-void Configuration::verifyEU4Version(const commonItems::ConverterVersion &converterVersion) const {
-	const auto EU4Version = GameVersion::extractVersionFromLauncher(EU4Path / "launcher-settings.json");
-	if (!EU4Version) {
-		Log(LogLevel::Error) << "EU4 version could not be determined, proceeding blind!";
-		return;
-	}
-
-	Log(LogLevel::Info) << "EU4 version: " << EU4Version->toShortString();
-
-	if (converterVersion.getMinTarget() > *EU4Version) {
-		Log(LogLevel::Error) << "EU4 version is v" << EU4Version->toShortString() << ", converter requires minimum v"
-				<< converterVersion.getMinTarget().toShortString() << "!";
-		throw std::runtime_error("Converter vs EU4 installation mismatch!");
-	}
-	if (!converterVersion.getMaxTarget().isLargerishThan(*EU4Version)) {
-		Log(LogLevel::Error) << "EU4 version is v" << EU4Version->toShortString() << ", converter requires maximum v"
-				<< converterVersion.getMaxTarget().toShortString() << "!";
-		throw std::runtime_error("Converter vs EU4 installation mismatch!");
-	}
+void Configuration::verifyEU5Version(const commonItems::ConverterVersion &converterVersion) const {
+	// To be implemented when EU5 is out.
 }

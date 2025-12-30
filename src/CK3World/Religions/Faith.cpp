@@ -53,7 +53,8 @@ void CK3::Faith::registerKeys() {
 	registerKeyword("variables",
 					[this](const std::string &unused, std::istream &theStream) {
 						if (commonItems::stringOfItem(theStream).getString().find("has_been_reformed") !=
-							std::string::npos) reformedFlag = true;
+							std::string::npos)
+							reformedFlag = true;
 					});
 	registerRegex(commonItems::catchallRegex, commonItems::ignoreItem);
 }

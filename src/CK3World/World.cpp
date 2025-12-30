@@ -1,23 +1,26 @@
 #include "World.h"
-#include "../Configuration/Configuration.h"
-#include "../Helpers/rakaly.h"
-#include "../commonItems/ParserHelpers.h"
-#include "Characters/Character.h"
-#include "Characters/CharacterDomain.h"
+#include "CK3World/Characters/Character.h"
+#include "CK3World/Characters/CharacterDomain.h"
+#include "CK3World/Geography/CountyDetail.h"
+#include "CK3World/Religions/Faith.h"
+#include "CK3World/Religions/Religion.h"
+#include "CK3World/Titles/Title.h"
 #include "CommonFunctions.h"
 #include "CommonRegexes.h"
-#include "Geography/CountyDetail.h"
+#include "Configuration/Configuration.h"
+#include "Helpers/rakaly.h"
 #include "Log.h"
 #include "ModLoader/ModFilesystem.h"
 #include "OSCompatibilityLayer.h"
-#include "Religions/Faith.h"
-#include "Religions/Religion.h"
-#include "Titles/Title.h"
+#include "ParserHelpers.h"
 #include <filesystem>
 #include <fstream>
 #include <ranges>
 namespace fs = std::filesystem;
 
+// ================================================================
+// 构造函数实现 (之前缺失的部分)
+// ================================================================
 CK3::World::World(const std::shared_ptr<Configuration> &theConfiguration,
 				  const commonItems::ConverterVersion & converterVersion) {
 	registerKeys(theConfiguration, converterVersion);
@@ -38,10 +41,11 @@ CK3::World::World(const std::shared_ptr<Configuration> &theConfiguration,
 	loadCharacterTraits(*theConfiguration);
 	loadHouseNames(*theConfiguration);
 	Log(LogLevel::Progress) << "15 %";
+
 	// Scraping localizations from CK3 so we may know proper names for our countries and people.
 	Log(LogLevel::Info) << "-> Reading Words";
 	localizationMapper.scrapeLocalizations(*theConfiguration, mods);
-	cultureMapper.loadCulturesFromDisk();
+	// 注意：已移除 cultureMapper.loadCulturesFromDisk()，因为那是 EU4 特有的逻辑
 
 	Log(LogLevel::Info) << "* Parsing Gamestate *";
 	auto gameState = std::istringstream(saveGame.gamestate);
@@ -87,6 +91,8 @@ CK3::World::World(const std::shared_ptr<Configuration> &theConfiguration,
 	Log(LogLevel::Info) << "*** Good-bye CK3, rest in peace. ***";
 	Log(LogLevel::Progress) << "47 %";
 }
+
+// ================================================================
 
 void CK3::World::registerKeys(const std::shared_ptr<Configuration> &theConfiguration,
 							  const commonItems::ConverterVersion & converterVersion) {
@@ -365,11 +371,8 @@ void CK3::World::crosslinkDatabases() {
 	houses.importNames(houseNameScraper);
 
 	Log(LogLevel::Info) << "-> Concocting Cultures.";
-	cultures.concoctCultures(localizationMapper, cultureMapper);
+	cultures.concoctCultures(localizationMapper);
 
-	std::set<std::shared_ptr<Culture> > cultureSet;
-	for (const auto &culture: cultures.getCultures() | std::views::values) cultureSet.insert(culture);
-	cultureMapper.storeCultures(cultureSet);
 	Log(LogLevel::Info) << "-> Loading Cultures into Counties.";
 	countyDetails.linkCultures(cultures);
 	Log(LogLevel::Info) << "-> Loading Cultures into Characters.";
@@ -528,7 +531,8 @@ void CK3::World::shatterHRE(const Configuration &theConfiguration) const {
 		if (hreHolderTitle.second->getLevel() == LEVEL::BARONY) // Absolutely ignore baronies.
 			continue;
 		if (hreHolderTitle.second->getLevel() == LEVEL::KINGDOM && theConfiguration.getShatterHRELevel() ==
-			Configuration::SHATTER_HRE_LEVEL::DUTCHY) continue;                                    // This is bricked.
+			Configuration::SHATTER_HRE_LEVEL::DUTCHY)
+			continue;                                                                              // This is bricked.
 		if (hreHolderTitle.second->getClay() && !hreHolderTitle.second->getClay()->isLandless()) { // looks solid.
 			hreHolderTitle.second->setHREEmperor();
 			Log(LogLevel::Info) << "Flagging " << hreHolderTitle.second->getName() << " as His HREship.";
@@ -591,17 +595,19 @@ void CK3::World::shatterEmpires(const Configuration &theConfiguration) const {
 	const auto &allTitles = titles.getTitles();
 
 	for (const auto &empire: allTitles) {
-		if (hreTitle &&empire
-		.
-		first == hreTitle->first
+		if (hreTitle && empire
+			.
+			first == hreTitle->first
 		)
-		continue; // This is HRE, wrong function for that one.
+			continue; // This is HRE, wrong function for that one.
 		if (theConfiguration.getShatterEmpires() == Configuration::SHATTER_EMPIRES::CUSTOM && !shatterEmpiresMapper.
-			isEmpireShatterable(empire.first)) continue; // Only considering those listed.
+			isEmpireShatterable(empire.first))
+			continue; // Only considering those listed.
 		if (empire.second->getLevel() != LEVEL::EMPIRE && theConfiguration.getShatterEmpires() !=
-			Configuration::SHATTER_EMPIRES::CUSTOM) continue; // Otherwise only empires.
-		if (empire.second->getDFVassals().empty()) continue;  // Not relevant.
-		if (!empire.second->getHolder()) continue;            // No holder.
+			Configuration::SHATTER_EMPIRES::CUSTOM)
+			continue;                                        // Otherwise only empires.
+		if (empire.second->getDFVassals().empty()) continue; // Not relevant.
+		if (!empire.second->getHolder()) continue;           // No holder.
 
 		std::map<long long, std::shared_ptr<Character> > brickedPeople; // these are people we need to fix.
 		// First we are composing a list of all members.
@@ -618,8 +624,9 @@ void CK3::World::shatterEmpires(const Configuration &theConfiguration) const {
 					"k_orthodox") { // hard override for special empire members
 
 					for (const auto &vassalVassal: vassal.second->getDFVassals()) {
-						if (!vassalVassal.second) Log(LogLevel::Warning) << "VassalVassal " << vassalVassal.first <<
-								" has no link!";
+						if (!vassalVassal.second)
+							Log(LogLevel::Warning) << "VassalVassal " << vassalVassal.first <<
+									" has no link!";
 						else members.insert(vassalVassal);
 					}
 					// Bricking the kingdom
@@ -770,8 +777,9 @@ void CK3::World::splitVassals(const Configuration &theConfiguration) {
 			double threshold = static_cast<double>(countiesClaimed.size()) / relevantVassals + 0.1 * static_cast<double>
 					(countiesClaimed.size());
 			threshold *= vassalSplitoffMapper.getFactor();
-			if (static_cast<double>(vassalProvincesClaimed.size()) > threshold) newIndeps.insert(
-				std::pair(vassal.second->getName(), vassal.second));
+			if (static_cast<double>(vassalProvincesClaimed.size()) > threshold)
+				newIndeps.insert(
+					std::pair(vassal.second->getName(), vassal.second));
 		}
 	}
 

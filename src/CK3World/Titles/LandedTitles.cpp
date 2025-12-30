@@ -33,8 +33,9 @@ void CK3::LandedTitles::registerKeys() {
 					  // Pull the titles beneath this one and add them to the lot, overwriting existing ones.
 					  auto newTitle = std::make_shared<LandedTitles>();
 					  newTitle->loadTitles(theStream);
-					  for (const auto &locatedTitle: newTitle->getFoundTitles()) foundTitles[locatedTitle.first] =
-							  locatedTitle.second;
+					  for (const auto &locatedTitle: newTitle->getFoundTitles())
+						  foundTitles[locatedTitle.first] =
+								  locatedTitle.second;
 
 					  // And then add this one as well, overwriting existing.
 					  foundTitles[titleName] = newTitle;
@@ -80,8 +81,9 @@ void CK3::LandedTitles::linkProvinceHoldings(const ProvinceHoldings &provinceHol
 	const auto &provinceData = provinceHoldings.getProvinceHoldings();
 	for (const auto &landedTitle: foundTitles) {
 		if (landedTitle.first.find("b_") != 0) continue;
-		if (!landedTitle.second->getProvince()) throw std::runtime_error(
-			"Landed title " + landedTitle.first + " has not province holding defined!");
+		if (!landedTitle.second->getProvince())
+			throw std::runtime_error(
+				"Landed title " + landedTitle.first + " has not province holding defined!");
 
 		const auto &provinceDataItr = provinceData.find(landedTitle.second->getProvince()->first);
 		if (provinceDataItr != provinceData.end()) {

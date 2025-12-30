@@ -1,8 +1,7 @@
 #include "Title.h"
-#include "../../Mappers/DevWeightsMapper/DevWeightsMapper.h"
-#include "../Characters/Character.h"
-#include "../Geography/CountyDetail.h"
-#include "../Geography/ProvinceHolding.h"
+#include "CK3World/Characters/Character.h"
+#include "CK3World/Geography/CountyDetail.h"
+#include "CK3World/Geography/ProvinceHolding.h"
 #include "CommonRegexes.h"
 #include "LandedTitles.h"
 #include "Log.h"
@@ -65,24 +64,6 @@ void CK3::Title::registerKeys() {
 					[this](const std::string &unused, std::istream &theStream) {
 						adjective = commonItems::singleString(theStream).getString();
 					});
-	/*
-	 // We're commenting this out because they started shoving in full utf-8 mapnames which are incompatible with eu4 when non-ascii.
-	 // retaining code just in case if needed alter down the line.
-
-	registerKeyword("specific_title_name", [this](const std::string& unused, std::istream& theStream) {
-		// This will override name set previously.
-		displayName = commonItems::singleString(theStream).getString();
-
-		// This is a check for ascii characters actually. We may have chinese here. However, in english they start with lowercase "the".
-		if (!displayName.empty() && std::islower(displayName[0]))
-			displayName[0] = std::toupper(displayName[0]);
-
-		if (displayName.find("\x15") != std::string::npos)
-		{
-			cleanUpDisplayName();
-		}
-	});
-	*/
 	registerKeyword("date",
 					[this](const std::string &unused, std::istream &theStream) {
 						creationDate = date(commonItems::singleString(theStream).getString());
@@ -247,13 +228,8 @@ void CK3::Title::brickTitle() {
 	grantIndependence();
 
 	// Drop from own holder's domain.
-	if (holder &&holder
-	->
-	second
-	)
-	holder->second->dropTitleFromDomain(ID);
-	else
-	Log(LogLevel::Warning) << "Bricking " << name << " without holder!";
+	if (holder && holder->second) holder->second->dropTitleFromDomain(ID);
+	else Log(LogLevel::Warning) << "Bricking " << name << " without holder!";
 
 	// Drop holder
 	holder.reset();
@@ -277,11 +253,7 @@ void CK3::Title::dropTitleFromDFVassals(long long titleID) {
 
 void CK3::Title::grantIndependence() {
 	// Drop this title from liege holder's vassals
-	if (dfLiege &&dfLiege
-	->
-	second
-	)
-	dfLiege->second->dropTitleFromDFVassals(ID);
+	if (dfLiege && dfLiege->second) dfLiege->second->dropTitleFromDFVassals(ID);
 
 	// Drop liege
 	dfLiege.reset();
@@ -307,33 +279,6 @@ std::map<std::string, std::shared_ptr<CK3::Title> > CK3::Title::coalesceDJCounti
 	}
 	toReturn.insert(ownedDJCounties.begin(), ownedDJCounties.end());
 	return toReturn;
-}
-
-void CK3::Title::pickDisplayName(const std::map<std::string, std::shared_ptr<Title> > &possibleTitles) {
-	// Guard clause all used pointers
-	if (!isRenamed()) return;
-
-	// Duchy capital ptrs are all null_ptr, outsource fixing and validation
-	const auto myDuchyCapital = findDuchyCapital();
-
-	if (!myDuchyCapital || myDuchyCapital->getID() == getID() || !myDuchyCapital->getDFLiege() || !getDFLiege()) return;
-
-	// If the title's name is transfering to EU4, make sure it makes sense. Thrace should use Constantinople's name...
-	// ... if they belong to the same owner, Constantinople also has a custom name and they are in the same mapping
-	if (myDuchyCapital->isRenamed() && possibleTitles.contains(myDuchyCapital->getName()) && myDuchyCapital->
-		getDFLiege()->first == getDFLiege()->first) { displayName = myDuchyCapital->getDisplayName(); }
-}
-
-std::shared_ptr<CK3::Title> CK3::Title::findDuchyCapital() {
-	if (name[0] != 'c' || !getDJLiege() || !getDJLiege()->second) return nullptr;
-
-	const auto  myDuchy = getDJLiege()->second;
-	const auto &capID   = myDuchy->getCapital().first;
-
-	if (myDuchy->getDJVassals().empty() || !myDuchy->getDJVassals().contains(capID) || !myDuchy->getDJVassals().
-		at(capID)) return nullptr;
-
-	return myDuchy->getDJVassals().at(capID);
 }
 
 void CK3::Title::congregateDFCounties() {
@@ -375,71 +320,26 @@ CK3::LEVEL CK3::Title::getLevel() const {
 	{
 		if (!allowedPrefixes.count(vassal.second->getName().at(0))) continue;
 		// Those dynamic vassals can't help us. Or heaven's forbid, it's an empire.
-		if (LevelToInt[vassal.second->getLevel()] > level) level = LevelToInt[vassal.second->getLevel()] + 1;
+		if (LevelToInt.at(vassal.second->getLevel()) > level) level = LevelToInt.at(vassal.second->getLevel()) + 1;
 	}
-	if (level > -1) return IntToLevel[std::max(level, 4)];
+	if (level > -1) return IntToLevel.at(std::max(level, 4));
 
 	// Without vassals we must poke at our hierarchy, if any.
-	if (djLiege) return IntToLevel[LevelToInt[djLiege->second->getLevel()] - 1];
+	if (djLiege) return IntToLevel.at(LevelToInt.at(djLiege->second->getLevel()) - 1);
 	else return LEVEL::EMPIRE;
 	// If this is wrong for landless mercs, it won't affect anything as they are landless anyway.
 }
 
 std::optional<commonItems::Color> CK3::Title::getColor() const {
 	if (color) return color;
-	if (clay &&clay
-	->
-	getColor()
-	)
-	return clay->getColor();
+	if (clay && clay->getColor()) return clay->getColor();
 	return std::nullopt;
 }
 
 bool CK3::Title::isLandless() const {
 	if (landless) return true;
-	if (clay &&clay
-	->
-	isLandless()
-	)
-	return true;
+	if (clay && clay->isLandless()) return true;
 	return false;
-}
-
-double CK3::Title::getBuildingWeight(const mappers::DevWeightsMapper &devWeightsMapper) const {
-	if (getLevel() != LEVEL::COUNTY) // This applies to nothing but counties.
-		return 0;
-
-	// buildingWeight is a mixture of all holdings, their potential buildings, and general county development.
-	if (!clay) throw std::runtime_error("County " + name + " has no clay?");
-	if (!clay->getCounty() || !clay->getCounty()->second) throw std::runtime_error(
-		"County " + name + " has no county in its clay?");
-	const auto development   = clay->getCounty()->second->getDevelopment();
-	auto       buildingCount = 0;
-	auto       holdingCount  = 0;
-
-	for (const auto &barony: djVassals) {
-		if (!barony.second) {
-			Log(LogLevel::Error) << "Running unlinked vassals, are we? " << std::to_string(barony.first) <<
-					" has no link.";
-			continue;
-		}
-		if (!barony.second->getClay()) {
-			Log(LogLevel::Error) << "Supposed barony " << barony.second->getName() << " of " << name << " has no clay?";
-			continue;
-		}
-		if (!barony.second->getClay()->getProvince() || !barony.second->getClay()->getProvince()->second) {
-			Log(LogLevel::Error) << "Barony " << barony.second->getName() << " of " << name << " has no clay province?";
-			continue;
-		}
-		const auto &baronyProvince = barony.second->getClay()->getProvince();
-		buildingCount              += baronyProvince->second->countBuildings();
-		if (!baronyProvince->second->getHoldingType().empty()) ++holdingCount;
-	}
-
-	const auto totalDev = devWeightsMapper.getDevFromHolding() * holdingCount + devWeightsMapper.getDevFromBuilding() *
-			buildingCount +
-			std::max(0.0, development - devWeightsMapper.getDevTreshold()) * devWeightsMapper.getDevFromDev();
-	return totalDev;
 }
 
 void CK3::Title::relinkDeFactoVassals() {

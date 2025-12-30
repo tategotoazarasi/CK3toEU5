@@ -1,6 +1,6 @@
 #include "Cultures.h"
+#include "CK3World/Cultures/Culture.h"
 #include "CommonRegexes.h"
-#include "Culture.h"
 #include "Log.h"
 #include "ParserHelpers.h"
 #include <ranges>
@@ -25,9 +25,8 @@ void CK3::Cultures::registerKeys() {
 	registerRegex(commonItems::catchallRegex, commonItems::ignoreItem);
 }
 
-void CK3::Cultures::concoctCultures(const mappers::LocalizationMapper &localizationMapper,
-									const mappers::CultureMapper &     cultureMapper) {
+void CK3::Cultures::concoctCultures(const mappers::LocalizationMapper &localizationMapper) {
 	for (const auto &culture: cultures | std::views::values) {
-		culture->concoctCultureName(localizationMapper, cultureMapper, cultureNamingCounter);
+		culture->concoctCultureName(localizationMapper, cultureNamingCounter);
 	}
 }
